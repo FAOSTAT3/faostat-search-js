@@ -1,0 +1,48 @@
+<div id="single-result_REPLACE" class="obj-box">
+
+        <div>
+            <div class='single-result-title-details'>
+                <div id='single-result-title_REPLACE'  class='single-result-title'></div>
+                <div id='single-result-code_REPLACE'   class='single-result-code'></div><br>
+                <div id='single-result-group_REPLACE'  class='single-result-group'></div>
+                <div id='single-result-domain_REPLACE' class='single-result-domain'></div>
+            </div>
+            <div class='single-result-buttons'>
+                <a id='single-result-preview_REPLACE' class='btn'  title="Preview the data">
+                    <div class='btn-preview-icon btnLeftIcon'></div>
+                    <div id='preview-text_REPLACE'class='btnText'></div>
+                </a>
+                <a id='single-result-export_REPLACE' class='btn'   title="Export the data">
+                    <div class='btn-export-icon btnLeftIcon'></div>
+                    <div id='export-text_REPLACE'class='btnText'></div>
+                </a>
+            </div>
+        </div>
+        <div style='clear:both;'></div>
+
+        <div>
+            <div style='position:relative; display:none' id='search-table_hide_REPLACE'>
+                <hr class='standard-hr'>
+                <div id='single-result-table-title_REPLACE' class='single-result-table-title'></div>
+                <div id='single-result-table-showhide_REPLACE' class='single-result-table-showhide'></div>
+            </div>
+
+            <div id='search-table_REPLACE' class='single-result-table-box' style='display:none; width:718px; overflow: auto;'></div>
+        </div>
+</div>
+
+<script>
+
+    document.getElementById('single-result-table-title_REPLACE').innerHTML = $.i18n.prop('_maxRowDisplayed');
+    document.getElementById('preview-text_REPLACE').innerHTML = $.i18n.prop('_preview');
+    document.getElementById('preview-text_REPLACE').title = $.i18n.prop('_previewTooltip');
+    $('#preview-text_REPLACE').powerTip({placement: 's'});
+    document.getElementById('export-text_REPLACE').innerHTML = $.i18n.prop('_export');
+    document.getElementById('export-text_REPLACE').title = $.i18n.prop('_exportTooltip');
+    $('#export-text_REPLAC').powerTip({placement: 's'});
+    document.getElementById('single-result-table-showhide_REPLACE').title = $.i18n.prop('_showHideTable');
+    $('#single-result-table-showhide_REPLACE').powerTip({placement: 's'});
+
+    document.getElementById('single-result-domain_REPLACE').title = $.i18n.prop('_goToDownload');
+    $("#single-result-domain_REPLACE").powerTip({placement: 's'});
+</script>

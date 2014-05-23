@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <!-- Meta Information -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <!-- External Resources -->
+    <link rel="stylesheet" href="http://fenixapps.fao.org/repository/css/jquery-ui/1.10.3/jquery-ui-1.10.3.custom.min.css" />
+
+    <script src="http://fenixapps.fao.org/repository/js/jquery/1.9.1/jquery.min.js"></script>
+    <script type='text/javascript' src='http://fenixapps.fao.org/repository/js/jquery-ui/1.10.3/jquery-ui-1.10.3.custom.min.js'></script>
+
+    <link rel="stylesheet" href="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/styles/jqx.base.css" type="text/css" />
+    <link rel="stylesheet"  href="http://fenixapps.fao.org/repository/js/jqwidgets/2.8//styles/jqx.energyblue.css" type="text/css" />
+
+
+    <link rel="stylesheet" href="http://fenixapps.fao.org/repository/css/jquery.power.tip/1.1.0/jquery.powertip.css" type="text/css" />
+    <script src="http://fenixapps.fao.org/repository/js/jquery.power.tip/1.1.0/jquery.powertip.min.js"></script>
+
+    <script type='text/javascript' src='http://fenixapps.fao.org/repository/js/jquery/1.0.9/jquery.i18n.properties-min.js'></script>
+    <script type='text/javascript' src='http://fenixapps.fao.org/repository/js/jquery/1.8.0/jquery.url.js'></script>
+
+    <!-- JQWidgets -->
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxcore.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxbuttons.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxscrollbar.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxpanel.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxtree.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxbuttongroup.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxradiobutton.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxbuttons.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxlistbox.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxdropdownlist.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxtabs.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxgrid.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxdata.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxgrid.selection.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxgrid.columnsresize.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxswitchbutton.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxpanel.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxcheckbox.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxexpander.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxnavigationbar.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxgrid.edit.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxslider.js"></script>
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jqwidgets/2.8/jqxcombobox.js"></script>
+
+    <!-- Slider -->
+    <link rel="stylesheet" href="http://fenixapps.fao.org/repository/css/jquery.rangeslider/4.2.6/iThing.css" type="text/css" />
+    <script type="text/javascript" src="http://fenixapps.fao.org/repository/js/jquery.rangeslider/4.2.6/jQRangeSlider-min.js"></script>
+
+    <!-- Internal Resources -->
+    <script type='text/javascript' src='js/faostat-search.js'></script>
+    <script type='text/javascript' src='js/faostat-search-single-result.js'></script>
+    <script type='text/javascript' src='js/faostat-search-export.js'></script>
+    <script type='text/javascript' src='js/faostat-search-google-analytics-manager.js'></script>
+
+    <!-- Faostat Search css -->
+    <link rel="stylesheet" href="css/widget.css" type="text/css" />
+    <link rel="stylesheet" href="css/faostat-search.css" type="text/css" />
+</head>
+
+<body onload='FAOSTATSearch.init("", "E");'>
+
+<div>
+    <div style='width: 1000px;'>
+        <div>
+            <div id='container' style='width: 928px; background-color: #FFFFFF;'></div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

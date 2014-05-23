@@ -1,0 +1,82 @@
+<project name="faostat-search" default="js.clean">
+
+	<description>
+		This ANT configuration concatenates and compress JS and CSS files for FENIX web application.
+	</description>
+
+	<!-- 
+		This is the application name, it is prefixed to the compressed JS and CSS
+		(e.g. myapp-min.js and myapp-min.css)
+	 -->
+	<property name="app" value="faostat-search"/>
+	
+	<!-- Folder -->
+	<property name="my_js" location="src/main/webapp/js"/>
+	<property name="my_css" location="src/main/webapp/css"/>
+
+	<target name="js.concatenate">
+		<echo>Concat JS: START...</echo>
+	    <concat destfile="test.js">
+	    	<filelist dir="${my_js}" files="${app}.js"/>
+	    	<filelist dir="${my_js}" files="faostat-search-single-result.js"/>
+	    	<filelist dir="${my_js}" files="faostat-search-export.js"/>
+	    	<filelist dir="${my_js}" files="faostat-search-google-analytics-manager.js"/>
+	    </concat>
+	    <echo>Concat JS: DONE!</echo>
+	</target>
+	
+	<target name="js.minify" depends="js.concatenate">
+		<echo>Minify: START...</echo>
+	    <java jar="yuicompressor.jar" fork="true">
+	        <arg value="test.js"/>
+	        <arg line="-o src/main/webapp/${app}-min.js"/>
+	    </java>
+	    <echo>Minify: DONE!</echo>
+	</target>
+	
+	<target name="css.concatenate" depends="js.minify">
+		<echo>Concat CSS: START...</echo>
+	    <concat destfile="test.css">
+	    	<filelist dir="${my_css}" files="${app}.css"/>
+	    	<filelist dir="${my_css}" files="widget.css"/>
+	    </concat>
+	    <echo>Concat CSS: DONE!</echo>
+	</target>
+	
+	<target name="css.minify" depends="css.concatenate">
+		<echo>Minify CSS: START...</echo>
+	    <java jar="yuicompressor.jar" fork="true">
+	        <arg value="test.css"/>
+	        <arg line="-o src/main/webapp/${app}-min.css"/>
+	    </java>
+	    <echo>Minify CSS: DONE!</echo>
+	</target>
+	
+	<target name="js.clean" depends="css.minify">
+		<echo>Clean: START...</echo>
+		<delete file="test.js"/>
+		<delete file="test.css"/>
+		<echo>Clean: DONE!</echo>		
+	</target>
+	
+	<target name="copy.images" depends="js.clean">
+		<echo>Copy images: START...</echo>
+		<copy todir="src/main/webapp/images">
+			<fileset dir="src/main/webapp/images">
+				<include name="*.png"/>
+			</fileset>
+		</copy>
+		<!-- <copy todir="src/main/webapp/images">
+			<fileset dir="src/main/resources/jqwidgets/styles/images">
+				<include name="*.png"/>
+			</fileset>
+		</copy> 
+		<copy todir="src/main/webapp/repository">
+			<fileset dir="src/main/resources/wrepo">
+				<include name="*.js"/>
+			</fileset>
+		</copy>-->
+		<echo>Copy images: DONE!</echo>
+	</target>
+
+</project>

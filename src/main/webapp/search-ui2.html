@@ -1,0 +1,71 @@
+
+<div class="pageTitleCommands">
+    <h1 id='pageTitle'></h1>
+</div>
+<div id='main-content-leftsidebar'>
+
+    <div class="search-box-holder">
+
+        <div class="ui-widget search-box-bar"><input id="searchbox"/></div>
+        <a id="search-button" style="margin-top:-7px" class='btn search-box-btn' title="Search">
+            <div class='btn-search-icon btnLeftIcon'></div>
+            <div id='search-text-button' class='btnText'></div>
+        </a>
+        <div id="search-no-values" class="search-no-values"></div>
+    </div>
+
+    <div class='spacer-one'></div>
+
+    <div id="search-content">
+
+        <div class="left-sidebar">
+            <!-- Years -->
+            <div id='search-filter-years-showhide' class='search-filter-title'></div>
+            <hr class='standard-hr'>
+            <div id='search-filter-years-container' style='margin-left:2px;'>
+                <div id='search-years-range-spacing-top' style='height:35px'></div>
+                <div id='search-years-range'></div>
+                <div id='search-years-range-spacing-bottom' style='height:30px'></div>
+            </div>
+
+            <!-- Domains -->
+            <div id='search-tree-showhide' class='search-filter-title'></div>
+            <hr class='standard-hr'>
+            <div id='search-tree-container'>
+                <!-- Add spacer-small -->
+                <div style='height:5px'></div>
+                <div id='search-tree'></div>
+                <a id='search-tree-select-all' class='btn'>
+                    <div class='icon-circle btnLeftIcon'></div>
+                    <div id='search_show_all_domains' class='btnText'></div>
+                </a>
+            </div>
+        </div>
+
+        <div class="right-content">
+            <div class='search-categories'>
+                <span id='search-items' class='search-categories-label'></span>
+                <span id='search-elements' class='search-categories-label'></span>
+            </div>
+
+            <!--<div id='search-title-type'></div>-->
+            <div id='search-results'></div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    document.getElementById('pageTitle').innerHTML = $.i18n.prop('_search');
+    document.getElementById('search-text-button').innerHTML = $.i18n.prop('_search');
+    document.getElementById('search-filter-years-showhide').innerHTML = $.i18n.prop('_filter_date');
+
+    document.getElementById('search-tree-showhide').innerHTML = $.i18n.prop('_filter_by_domain');
+    document.getElementById('search-tree-showhide').title = $.i18n.prop('_filter_by_domain_tooltip');
+    $('#search-tree-showhide').powerTip({placement: 's'});
+
+    document.getElementById('search_show_all_domains').innerHTML = $.i18n.prop('_filter_show_all_domains');
+    document.getElementById('search-items').innerHTML = $.i18n.prop('_results_by_item');
+    document.getElementById('search-elements').innerHTML = $.i18n.prop('_results_by_element');
+</script>

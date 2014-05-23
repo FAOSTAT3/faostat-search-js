@@ -1,0 +1,6 @@
+{
+	"datasource": "faostat2",
+	"baseurlcodes": "hqlprfenixapp1.hq.un.fao.org:42000",
+	"baseurlwds": "hqlprfenixapp1.hq.un.fao.org:42000",
+    "gatewayURL": "hqlprfenixapp1.hq.un.fao.org:42000"
+}

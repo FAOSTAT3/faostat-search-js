@@ -1,0 +1,89 @@
+<table style='width: 100%; padding: 16px;'>
+	<tr>
+		<td>
+			<div>
+				<table>
+					<tr>
+					 	<td valign="top">
+					 		<div class="ui-widget">
+				    			<input id="searchbox"/>
+						</td>
+						<td valign="middle">
+							<div id="search-button" value="Search" title="Search"><img src="images/search-icon.png"></div>
+						</td>
+				  </tr>
+					 <!--  <td>
+					  	<div id='search-example'></div>
+					 </td> -->
+					  
+				 </table>
+			</div>
+			<div id="search-no-values" class="search-no-values"></div>
+			<div id="search-content">
+				  <table>
+					<tr>
+					 	<td valign="top">
+							<div id='search-items' class='search-categories'>items</div>
+						</td>
+						<td valign="top">
+							<div id='search-elements' class='search-categories'>elements</div>
+						</td>
+				  </tr>
+				 </table>
+				 
+
+				<table>
+				 <tr>
+
+				 	<!-- TODO: make it nicer... -->
+				 	<td style='width:300px' valign="top">
+				 		<!-- Areas --> 
+				 		<div style='width:300px' id='search-filter-areas-showhide' class='search-filter-title' value="Search" title="Filter the output data results selecting the interested areas or regions">Filter output data by area/region</div>			 		
+				 		<div id='search-filter-areas-container'> 
+				 			<div style='height:5px'></div>
+							<div class="search-areas-tab" id="tabCountries" style='margin-left: 15px;'>		
+										<ul>
+											<li id='li_countries'>Countries</li>
+											<li id='li_regions'>Regions</li>
+											<li id='li_special_groups'>Special Groups</li>
+										</ul>
+													
+										<div id="gridCountries"></div>
+															
+										<div class="faostat-download-list" id="gridRegions"></div>
+															
+										<div class="faostat-download-list" id="gridSpecialGroups"></div>
+																			
+							</div>		
+						</div>
+						<div style='height:20px'></div>
+						
+						<!-- Years --> 
+						<div style='width:300px' id='search-filter-years-showhide' class='search-filter-title'>Filter output data by year</div>
+				 		<div id='search-filter-years-container'> 
+					 		<div id='search-years-range-spacing-top' style='height:45px'></div>
+					 		<div id='search-years-range' style='width:300px' class='search-years-range'></div>
+					 		<div id='search-years-range-spacing-bottom' style='height:30px'></div>
+					 	</div>
+					 	<div style='height:20px'></div>
+				 		
+				 		<!-- Domains --> 
+				 		<div style='width:300px' id='search-tree-showhide' class='search-filter-title'>Filter results by domain</div>
+				 		<div id='search-tree-container'> 
+				 			<div style='height:5px'></div>
+							<div id='search-tree'></div>
+							<div id='search-tree-select-all'>Show all domains</div>
+						</div>
+					</td>
+					<td>
+						<div style='width:15px'></div>
+					</td>
+					<td valign="top">
+						<div id='search-results'></div>
+					</td>
+				  </tr>
+				</table>
+			
+		</td>
+	</tr>
+</table>

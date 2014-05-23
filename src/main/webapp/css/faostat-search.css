@@ -1,0 +1,163 @@
+@CHARSET "UTF-8";
+
+#searchbox {
+	width: 500px;
+}
+
+.ui-widget textarea {
+	font-size: 10px !important;
+}
+
+.ui-menu-item {
+	font-size: 10px !important;
+}
+
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
+    /* IE 6 doesn't support max-height
+     * we use height instead, but this forces the menu to always be this tall
+     */
+* html .ui-autocomplete {
+    height: 200px;
+}
+
+.search-categories-bar div {
+  float: left;
+  clear: none; 
+  padding-left:22px;
+}
+
+.search-categories {
+    font-size:20px;
+    display: none;
+    color: #aaa;
+    font-weight: bold;
+}
+
+.search-categories:hover {
+	cursor: pointer;
+	color: #399BCC;
+}
+
+.search-categories-selected {
+    color: #399BCC;
+}
+
+.search-no-values {
+	font-size: 15px;
+	color: #399BCC;
+	display: none;
+}
+
+#search-example {
+	font-size: 12px;
+	color: #aaa;
+}
+
+
+#search-button:hover {
+	cursor: pointer;
+}
+
+.search-years-range {
+	
+}
+
+.search-tree-title {
+    font-size: 11px;
+}
+
+.search-tree-container {
+	display: none;
+}
+    
+.search-result-title {
+    font-size: 11px;
+}
+
+
+.single-result-title {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.single-result-code {
+    font-size: 11px;
+}
+
+.single-result-group {
+    font-size: 11px;
+}
+
+.single-result-domain {
+    font-size: 11px;
+}
+
+.single-result-domain:hover {
+	cursor: pointer;
+}
+
+.single-result-elements {
+	color: #aaa;
+    font-size: 10px;
+    width: 500px;
+}
+
+.single-result-button {
+	background-color: #399BCC;
+	color: #fff;
+    font-size: 14px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.single-result-button:hover {
+	background-color: #aaa;
+    cursor: pointer;
+}
+
+.single-result-table-hide {
+	color: #aaa;
+	font-size: 13px;
+	display: none;
+}
+
+.single-result-table-hide:hover {
+	color: #399BCC;
+	cursor: pointer;
+}
+
+.search-filter-title {
+	color: #399BCC;
+	font-size: 15px;
+	font-weight: bold;
+}
+
+.search-filter-title-closed {
+	color: #fff;
+	background-color: #aaa;
+}
+
+#search-content {
+	display: none;
+}
+
+#search-results {
+	padding-top:10px;
+	clear:both; 
+}
+
+.search-tree-select-all {
+	padding-left: 10px;
+	font-size: 12px
+}
+
+.search-tree-select-all:hover {
+	cursor: pointer;
+}
