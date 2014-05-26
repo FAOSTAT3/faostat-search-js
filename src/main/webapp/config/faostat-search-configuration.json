@@ -1,6 +1,7 @@
 {
 	"datasource": "faostat2",
-	"baseurlcodes": "hqlprfenixapp1.hq.un.fao.org:42000",
-	"baseurlwds": "hqlprfenixapp1.hq.un.fao.org:42000",
-    "gatewayURL": "hqlprfenixapp1.hq.un.fao.org:42000"
+	"baseurlcodes": "168.202.28.214:8090",
+	"baseurlwds": "faostat3.fao.org",
+    "gatewayURL": "faostat3.fao.org",
+    "I18N_URL" :  "http://168.202.28.214:8080/faostat-gateway/static/faostat/I18N/"
 }

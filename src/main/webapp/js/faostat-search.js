@@ -2,7 +2,7 @@ if (!window.FAOSTATSearch) {
 
     window.FAOSTATSearch = {
 
-        prefix: 'http://168.202.23.99:8080/faostat-search-js/',
+        prefix: 'http://168.202.28.214:8080/faostat-search-js/',
         gatewayURL: '',
         list: '',
         codes: '',
@@ -31,33 +31,37 @@ if (!window.FAOSTATSearch) {
             if (tmp != null && tmp.length > 0)
                 FAOSTATSearch.lang = tmp;
 
-            /**
-             * Initiate multi-language
-             */
-            var I18NLang = '';
-            switch (FAOSTATSearch.lang) {
-                case 'F' : I18NLang = 'fr'; break;
-                case 'S' : I18NLang = 'es'; break;
-                default: I18NLang = 'en'; break;
-            }
-            $.i18n.properties({
-                name: 'I18N',
-                path: FAOSTATSearch.prefix + 'I18N/',
-                mode: 'both',
-                language: I18NLang
-            });
+            $.getJSON(FAOSTATSearch.prefix + 'config/faostat-search-configuration.json', function(data) {
+                FAOSTATSearch.baseurlcodes = data.baseurlcodes;
+                FAOSTATSearch.baseurlwds = data.baseurlwds;
+                FAOSTATSearch.datasource = data.datasource;
+                FAOSTATSearch.gatewayURL = data.gatewayURL;
+                FAOSTATSearch.I18N_URL = data.I18N_URL;
 
-            // loading the interface
-            $('#container').load(FAOSTATSearch.prefix + 'search-ui2.html', function() {
-                $.getJSON(FAOSTATSearch.prefix + 'config/faostat-search-configuration.json', function(data) {
-                    FAOSTATSearch.baseurlcodes = data.baseurlcodes;
-                    FAOSTATSearch.baseurlwds = data.baseurlwds;
-                    FAOSTATSearch.datasource = data.datasource;
-                    FAOSTATSearch.gatewayURL = data.gatewayURL;
-                    FAOSTATSearch.initUI(word);
+                /**
+                 * Initiate multi-language
+                 */
+                var I18NLang = '';
+                switch (FAOSTATSearch.lang) {
+                    case 'F' : I18NLang = 'fr'; break;
+                    case 'S' : I18NLang = 'es'; break;
+                    default: I18NLang = 'en'; break;
+                }
+                $.i18n.properties({
+                    name: 'I18N',
+                    path: FAOSTATSearch.I18N_URL,
+                    mode: 'both',
+                    language: I18NLang,
+                    callback: function () {
+
+                        // modify languages
+                        $('#container').load(FAOSTATSearch.prefix + 'search-ui2.html', function() {
+                            FAOSTATSearch.initUI(word);
+                        });
+                    }
+
                 });
             });
-
 
             // GET Single Search HTML
             $.ajax({
@@ -69,6 +73,8 @@ if (!window.FAOSTATSearch) {
                     FAOSTATSearch.singleResultUI = data;
                 }
             });
+
+
 
         },
 
@@ -186,7 +192,7 @@ if (!window.FAOSTATSearch) {
                 height: '25'
             });
             /** TODO: which domain?? **/
-            FAOSTATSearch.populateGrid("countries", "gridCountries", "QC");
+            //FAOSTATSearch.populateGrid("countries", "gridCountries", "QC");
 
 
             $('#search-filter-areas-showhide').click(function () {
