@@ -27,9 +27,6 @@ if (!window.FAOSTATSearch) {
             if (lang != null && lang.length > 0) {
                 FAOSTATSearch.lang = lang;
             }
-            var tmp = $.url().param('lang');
-            if (tmp != null && tmp.length > 0)
-                FAOSTATSearch.lang = tmp;
 
             $.getJSON(FAOSTATSearch.prefix + 'config/faostat-search-configuration.json', function(data) {
                 FAOSTATSearch.baseurlcodes = data.baseurlcodes;
