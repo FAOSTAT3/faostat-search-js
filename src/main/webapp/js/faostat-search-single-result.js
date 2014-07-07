@@ -58,12 +58,15 @@ var FAOSTATSearchSingleResult = function() {
 				
 				// go to the download page
 				// TODO: get current url
-				//alert( window.location.href );
-				//http://fenixapps.fao.org/faostat-download-js/index.html
 				$("#single-result-domain_" + suffix).bind('click', function() {
                     FAOSTATSEARCH_STATS.goToDownload(domaincode);
-					window.open('http://'+ FAOSTATSearch.gatewayURL + '/faostat-gateway/go/to/download/'+ _this.values[0].gc +'/'+ _this.values[0].dc +'/' + FAOSTATSearch.lang);
+					window.open('http://'+ FAOSTATSearch.gatewayURL + '/faostat-gateway/go/to/download/'+ _this.values[0].gc +'/'+ _this.values[0].dc +'/' + FAOSTATSearch.lang,'_self',false)
 		        });
+
+                $("#single-result-go-to-download_" + suffix).bind('click', function() {
+                    FAOSTATSEARCH_STATS.goToDownload(domaincode);
+                    window.open('http://'+ FAOSTATSearch.gatewayURL + '/faostat-gateway/go/to/download/'+ _this.values[0].gc +'/'+ _this.values[0].dc +'/' + FAOSTATSearch.lang,'_self',false)
+                });
 
               /*  $("#single-result-group_" + suffix).bind('click', function() {
                     window.open('http://'+ FAOSTATSearch.gatewayURL + '/faostat-gateway/go/to/browse/'+ _this.values[0].gc +'/'+ _this.values[0].dc +'/' + FAOSTATSearch.lang);
