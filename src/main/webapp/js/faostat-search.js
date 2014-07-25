@@ -93,6 +93,9 @@ if (!window.FAOSTATSearch) {
                 }
             });
 
+            // focus on searchbox
+            $("#searchbox").focus()
+
             // add export
             $("#search-button").bind('click', function() {
                 FAOSTATSearch.searchValue();
