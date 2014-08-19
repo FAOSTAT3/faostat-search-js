@@ -18,9 +18,17 @@ if (!window.FAOSTATSearch) {
         singleResultBaseURL: 'search-single-result2.html',
         singleResultUI: '',
 
+        // result from last search
+        itemsSearch : '',
+
+        // result from last search
+        elementSearch : '',
+
+        limit : 25,
+
+
         // group and domains are not used, it's just to be compliant with gateway
         init : function( word, lang ) {
-
             /**
              * Language: as parameter or from the URL
              */
@@ -50,41 +58,29 @@ if (!window.FAOSTATSearch) {
                     mode: 'both',
                     language: I18NLang,
                     callback: function () {
-
-                        // modify languages
-                        $('#container').load(FAOSTATSearch.prefix + 'search-ui2.html', function() {
-                            FAOSTATSearch.initUI(word);
+                        // GET Single Search HTML
+                        $.ajax({
+                            type: "GET",
+                            url: FAOSTATSearch.prefix + FAOSTATSearch.singleResultBaseURL,
+                            success: function(data){
+                                FAOSTATSearch.singleResultUI = data;
+                                // modify languages
+                                $('#container').load(FAOSTATSearch.prefix + 'search-ui2.html', function() {
+                                    FAOSTATSearch.initUI(word);
+                                });
+                            }
                         });
                     }
 
                 });
             });
-
-            // GET Single Search HTML
-            $.ajax({
-                type: "GET",
-                url: FAOSTATSearch.prefix + FAOSTATSearch.singleResultBaseURL,
-                success: function(data){
-                    /** TODO: remove innerHTML **/
-//                       FAOSTATSearch.singleResultUI = data.activeElement.innerHTML;
-                    FAOSTATSearch.singleResultUI = data;
-                }
-            });
-
-
-
         },
 
         initUI : function(word) {
 
-
-            /** Multilanguage **/
-//			document.getElementById('search-example').innerHTML = $.i18n.prop('_search_example');
-
             /** Tooltip **/
             $('#search-button').powerTip({placement: 'e'});
             $('#search-filter-areas-showhide').powerTip({placement: 'e'});
-
 
             // listening the key to check if enter is pressed
             $("#searchbox").keypress(function(event) {
@@ -129,35 +125,6 @@ if (!window.FAOSTATSearch) {
                         }
 
                     }
-
-                    // getting the elements list
-                    $.ajax({
-                        type: 'GET',
-                        url: 'http://'+ FAOSTATSearch.baseurlcodes +'/bletchley/rest/codes/all/elements/'+ FAOSTATSearch.datasource +'/null/'+ FAOSTATSearch.lang,
-                        dataType: 'json',
-                        success : function(response) {
-                            codes = codes.concat(response);
-
-                            var current = '';
-                            for (var i = 0 ; i < response.length; i++) {
-                                // this is used as blacklist
-                                if ( current != response[i].label) {
-                                    list.push(response[i].label);
-                                    current = response[i].label;
-                                }
-                            }
-
-                             // TODO: remove it from here the search
-                            if ( word != null && word != '') {
-                                FAOSTATSearch.searchValue(word);
-                                $("#searchbox").val(word);
-
-                            }
-                        },
-                        error : function(err,b,c) {
-                            alert(err.status + ", " + b + ", " + c);
-                        }
-                    });
                 },
                 error : function(err,b,c) {
                     alert(err.status + ", " + b + ", " + c);
@@ -170,12 +137,10 @@ if (!window.FAOSTATSearch) {
 
             // add export
             $("#search-items").bind('click', function() {
-                // TODO: change style to item
-                FAOSTATSearch.searchByItem();
+                FAOSTATSearch.show("items");
             });
             $("#search-elements").bind('click', function() {
-                // TODO: change style to element
-                FAOSTATSearch.searchByElement();
+                FAOSTATSearch.show("elements");
             });
 
             $(".search-areas-tab").jqxTabs({
@@ -214,6 +179,7 @@ if (!window.FAOSTATSearch) {
             $('#search-tree').bind('select', function (event) {
                 var args = event.args;
                 var item = $('#search-tree').jqxTree('getItem', args.element);
+                console.log(item)
                 // focus on top
                 $(window).scrollTop($('#searchbox').offset().top);
                 // filter results
@@ -221,6 +187,7 @@ if (!window.FAOSTATSearch) {
                     FAOSTATSearch.filterResultsByDomain(item.value);
                 }
                 else {
+                    console.log(item)
                     FAOSTATSearch.filterResultsByGroup(item.value);
                 }
             });
@@ -273,7 +240,6 @@ if (!window.FAOSTATSearch) {
          * this method checks if there are items or elements retrieved by the search
          */
         searchValue : function(word) {
-
             FAOSTATSearch.valuesResults = new Array();
 
 
@@ -296,197 +262,223 @@ if (!window.FAOSTATSearch) {
                 alert("The word to search is too short");
             }
             if ( text.length > 2 ) {
-                // close the autocomplete
-                $( "#searchbox" ).autocomplete( "close" );
-                var obj = new Array();
-                $.each(codes, function(k, v) {
-                    /** this is with the contains **/
-                    if (v.label.toLowerCase().indexOf(text.toLowerCase()) !=-1) {
-                        obj.push(v);
-                    }
-                });
-                // TODO: if it's 0 try to get the results of different words.
-                // this could be make more precise with another algorithm that concatenate the words as well
-                if (obj.length == 0 ) {
-                    var texts = new Array();
-                    var s = text.match(/\w+/g);
-                    for( i = 0; i < s.length; i++) {
-                        if ( s[i].length > 3 ) {
-                            texts.push(s[i]);
-                        }
-                    }
-                    $.each(codes, function(k, v) {
-                        for (i=0; i< texts.length; i++) {
-                            if (v.label.toLowerCase().indexOf(texts[i].toLowerCase()) !=-1) {
-                                obj.push(v);
-                            }
+                FAOSTATSearch.searchBy(text);
+            }
+        },
+
+        searchBy: function(text) {
+
+            $( "#searchbox" ).autocomplete( "close" );
+            //FAOSTATSearch.getAreas(text)
+//            FAOSTATSearch.searchByItem(text);
+//            FAOSTATSearch.searchByElement(text);
+
+            $('#search-content').css('display', 'none');
+            $('#search-no-values').css('display', 'none');
+
+
+
+            var url = "http://localhost:8090/wds/rest/search/text/element/" + FAOSTATSearch.datasource + "/DomainVar/"+ text +"/" + FAOSTATSearch.lang +"/" + FAOSTATSearch.limit
+            var _this = this;
+            $.ajax({
+                type: 'GET',
+                url: url,
+                dataType: 'json',
+                success : function(response) {
+                    var url = "http://localhost:8090/wds/rest/search/text/item/" + FAOSTATSearch.datasource + "/DomainVar/"+ text +"/" + FAOSTATSearch.lang +"/" + FAOSTATSearch.limit
+                    var elements = (typeof response == 'string')? $.parseJSON(response) : response;
+                    $.ajax({
+                        type: 'GET',
+                        url: url,
+                        dataType: 'json',
+                        success : function(response) {
+                            var items = (typeof response == 'string')? $.parseJSON(response) : response;
+                            FAOSTATSearch.elementsSearch = elements;
+                            FAOSTATSearch.itemsSearch = items;
+                            _this.showResults(items, elements)
+                        },
+                        error : function(err,b,c) {
+                            alert(err.status + ", " + b + ", " + c);
                         }
                     });
+
+                },
+                error : function(err,b,c) {
+                    alert(err.status + ", " + b + ", " + c);
                 }
+            });
+        },
 
-                // this is used to pass the items to the search
-                items = FAOSTATSearch.searchCheckCategories(obj, 'items');
+        showResults: function(items, elements) {
+            // display none of the items/elements results
+            $("#search-results-items").css('display', 'none');
+            $("#search-results-elements" ).css('display', 'none');
+            $('#search-items').css('display', 'none');
+            $('#search-elements').css('display', 'none');
+            $("#search-results-items").empty()
+            $("#search-results-elements").empty()
 
-                // this is used to pass the elemtens to the search
-                elements = FAOSTATSearch.searchCheckCategories(obj, 'elements');
 
-/*                console.log(items)
-                console.log(elements)*/
+            if ( items.length <= 0 && elements.length  <= 0 ) {
+                $('#search-no-values').css('display', 'inline');
+                $('#search-no-values').html("asdiujaosdij")
+            }
+            else {
+                $('#search-no-values').css('display', 'none');
+                $('#search-content').css('display', 'inline');
 
-                // display categories search bar
-                if ( items != '' && items !=null)
+                if ( items.length > 0 ) {
                     $('#search-items').css('display', 'inline-block');
-                else
-                    $('#search-items').css('display', 'none');
-
-                if ( elements != '' && elements != null )           {
+                    for(var i=0; i < items.length; i++) {
+                        this.buildSearchSingleBoxOutput(items[i], 'items');
+                    }
+                }
+                if ( elements.length > 0) {
                     $('#search-elements').css('display', 'inline-block');
-                }
-                else
-                    $('#search-elements').css('display', 'none');
-
-
-                // getting all the items
-                if ( items != '' ) {
-                    $('#search-content').css('display', 'inline');
-                    $('#search-no-values').css('display', 'none');
-                    FAOSTATSearch.searchByItem();
-                }
-                else if ( elements != '') {
-                    $('#search-content').css('display', 'inline');
-                    $('#search-no-values').css('display', 'none');
-                    FAOSTATSearch.searchByElement();
-                }
-                else {
-                    document.getElementById('search-no-values').innerHTML = $.i18n.prop('_no_results_available');
-                    $('#search-content').css('display', 'none');
-                    $('#search-no-values').css('display', 'block');
+                    for(var i=0; i < elements.length; i++) {
+                        this.buildSearchSingleBoxOutput(elements[i], 'elements');
+                    }
                 }
 
+                // display
+                if ( items.length > 0 ) {
+                    $('#search-items').addClass('search-categories-label-selected');
+                    $('#search-elements').removeClass('search-categories-label-selected');
+                    $("#search-results-items").css('display', 'inline');
 
-            }
+                    // filter results domain
+                    FAOSTATSearch.buildFilters(items);
 
-        },
-        searchCheckCategories: function(obj, filter) {
-            // this is used to pass the items to the search
-            results = '';
-            for ( var i = 0; i < obj.length; i++ ) {
-                if ( obj[i].type  == filter) {
-                    results += obj[i].code + ",";
+                }
+                else if ( elements.length > 0 ) {
+                    $('#search-elements').addClass('search-categories-label-selected');
+                    $('#search-items').removeClass('search-categories-label-selected');
+                    $("#search-results-elements").css('display', 'inline');
+
+                    // filter results domain
+                    FAOSTATSearch.buildFilters(elements);
                 }
             }
-            results = results.slice(0, -1);
-            return results;
         },
-        searchByItem: function() {
-            $('#search-items').addClass('search-categories-label-selected');
-            $('#search-elements').removeClass('search-categories-label-selected');
-            var _this = this;
+
+
+        show: function(type) {
+            switch (type) {
+                case "items" :
+                    $('#search-items').addClass('search-categories-label-selected');
+                    $('#search-elements').removeClass('search-categories-label-selected');
+                    $("#search-results-elements").css('display', 'none');
+                    $("#search-results-items").css('display', 'inline');
+
+                    FAOSTATSearch.buildFilters(FAOSTATSearch.itemsSearch);
+                    break;
+                case "elements" :
+                    $('#search-elements').addClass('search-categories-label-selected');
+                    $('#search-items').removeClass('search-categories-label-selected');
+                    $("#search-results-items").css('display', 'none');
+                    $("#search-results-elements").css('display', 'inline');
+                    FAOSTATSearch.buildFilters(FAOSTATSearch.elementsSearch);
+                    break;
+            }
+            for(var i=0; i < FAOSTATSearch.valuesResults.length; i++) {
+                var value = FAOSTATSearch.valuesResults[i];
+                $('#search-results_' + value.suffix).show();
+            }
+        },
+
+
+
+        getAreas: function(value) {
+            var url = 'http://localhost:8090/wds/rest/search/areas/'+ FAOSTATSearch.datasource +'/area/'+ value +"/"+ FAOSTATSearch.lang;
+            console.log(url);
             $.ajax({
                 type: 'GET',
-                url: 'http://'+ FAOSTATSearch.baseurlcodes +'/bletchley/rest/codes/search/'+ items +'/items/'+ FAOSTATSearch.datasource +'/'+ FAOSTATSearch.lang,
+                url: url,
                 dataType: 'json',
                 success : function(response) {
+                    response = (typeof response == 'string')? $.parseJSON(response) : response
 
-                    // build tree
-                    _this.buildFilters(response);
-                    _this.buildSearchOutput(response, 'items');
+                    var dropdowndID = "search-areas-dropdown"
+                    $('#search-areas').empty();
 
+
+                    var html = '<select multiple id="'+ dropdowndID+'" style="width:200px;" data-placeholder="'+ $.i18n.prop('_select') +'" class="">';
+                    html += '<option value=""></option>';
+
+                    for(var i=0; i < response.length; i++) {
+//                        console.log(response[i]);
+
+                        console.log(response[i][3]);
+                        if ( response[i][3]) {
+                            console.log(response[i]);
+                            html += '<option selected value="' + response[i][0] + '">' + response[i][1] + '</option>';
+                        }
+                        else
+                            html += '<option value="' + response[i][0] + '">' + response[i][1] + '</option>';
+
+                    }
+                    html += '</select>';
+
+                    $('#search-areas').append(html);
+                    $('#' + dropdowndID).chosen(
+                        {disable_search_threshold:6,
+                        width: '100%'}
+                    );
                 },
                 error : function(err,b,c) {
                     alert(err.status + ", " + b + ", " + c);
                 }
             });
-        },
-        searchByElement: function() {
-            $('#search-elements').addClass('search-categories-label-selected');
-            $('#search-items').removeClass('search-categories-label-selected');
-            var _this = this;
-            $.ajax({
-                type: 'GET',
-                url: 'http://'+ FAOSTATSearch.baseurlcodes +'/bletchley/rest/codes/search/'+ elements +'/elements/'+ FAOSTATSearch.datasource +'/'+ FAOSTATSearch.lang,
-                dataType: 'json',
-                success : function(response) {
 
-                    // build tree
-                    _this.buildFilters(response);
-                    _this.buildSearchOutput(response, 'elements');
 
-                },
-                error : function(err,b,c) {
-                    alert(err.status + ", " + b + ", " + c);
-                }
-            });
         },
 
         buildFilters: function(response) {
-
             $("#search-years-range").rangeSlider({bounds:{min: 1961, max: 2050}}, {defaultValues: {min: 1961, max: 2011}}, {step: 1});
-
             FAOSTATSearch.buildTree(response);
         },
 
         buildTree: function(response) {
+            console.log(response);
 
-            var gc = '';
-            var dc = '';
-            var gcID = 0;
-            var dcID = 100;
-            var data = '[';
-            // this is the first level to show everything
+            $('#search-tree').show()
 
+            var dict = {};
             for (var i = 0; i < response.length; i++) {
-                if ( gc != response[i].gc ) {
-                    gcID++;
-                    data += '{';
-                    data += '"id": "' + response[i].gc +'",';
-                    data += '"value": "' + response[i].gc +'",';
-                    data += '"text": "' + CORE.breakLabel(response[i].gn) +'",';
-                    data += '"parentid": "-1"';
-                    data += '}';
-                    data += ',';
-                    gc = response[i].gc;
-                    //console.log(gc);
+                if ( !dict[response[i][1]] ) {
+                    dict[response[i][1]] = {}
                 }
-                if ( dc != response[i].dc ) {
-                    dcID++;
-                    data += '{';
-                    data += '"id": "' + response[i].dc +'-dc",';
-                    data += '"value": "' + response[i].dc +'",';
-                    data += '"text": "' +  CORE.breakLabel(response[i].dn) +'",';
-                    data += '"parentid": "' + response[i].gc +'"';
-                    data += '}';
-                    data += ',';
-                    dc = response[i].dc;
-                    //console.log(dc);
+                if ( !dict[response[i][1]][response[i][3]] ) {
+                    dict[response[i][1]][response[i][3]] = {}
                 }
+                dict[response[i][1]][response[i][3]] = response[i]
             }
-            data = data.slice(0, -1);
-            data += ']';
 
-            var source = {
-                datatype: "json",
-                datafields: [
-                    { name: 'id' },
-                    { name: 'parentid' },
-                    { name: 'value' },
-                    { name: 'text' }
-                ],
-                id: 'id',
-                localdata: data
-            };
-            var theme = '';
-            // create data adapter.
-            var dataAdapter = new $.jqx.dataAdapter(source);
-            // perform Data Binding.
-            dataAdapter.dataBind();
-            // get the tree items. The first parameter is the item's id. The second parameter is the parent item's id. The 'items' parameter represents 
-            // the sub items collection name. Each jqxTree item has a 'label' property, but in the JSON data, we have a 'text' field. The last parameter 
-            // specifies the mapping between the 'text' and 'label' fields.  
-            var records = dataAdapter.getRecordsHierarchy('id', 'parentid', 'items', [{ name: 'text', map: 'label'}]);
-            $('#search-tree').jqxTree({ source: records, theme: theme });
+            var sortedKeys = Object.keys(dict).sort();
+            var source = []
+            for (var i=0; i < sortedKeys.length; i++) {
+                var obj = {}
+                obj.items = []
+                var keys = Object.keys(dict[sortedKeys[i]]);
+                for (var j=0; j < keys.length; j++) {
+                    var value = dict[sortedKeys[i]][keys[j]];
+                    if ( j == 0 ) {
+                        // group
+                        obj.value = value[0]
+                        obj.label = value[1]
+                    }
+                    // domain
+                    var leaf = {
+                        "value" : value[2],
+                        "label" : value[3]
+                    }
+                    obj.items.push(leaf)
+                }
+                source.push(obj)
+            }
+            $('#search-tree').jqxTree({ source: source});
+            $('#search-tree').jqxTree('selectItem', null);
             $('#search-tree').jqxTree('expandAll');
-
         },
         // first function to create the output view (per single
         buildSearchOutput : function(response, type) {
@@ -506,7 +498,6 @@ if (!window.FAOSTATSearch) {
                     values = [];
                     values.push(response[i]);
                     sum++;
-                    //console.log("values: " + values);
                 }
                 else {
                     if ( i != 0 ) {
@@ -523,10 +514,6 @@ if (!window.FAOSTATSearch) {
 
         // this builds the item/element view
         buildSearchValueOutput: function(values, type) {
-//			console.log("--------:" + values[0].code + " | " + values.length);
-//			for(var i = 0; i < values.length; i++ ) {
-//				console.log("1]" + values[i].label + " | " + values[i].code + " | " + values[i].gn + " | " + values[i].dc + " | " + values[i].dn + " | " + values[i].ec + " | " + values[i].en);
-//			}
             var gc = '';
             var v = [];
             var sum = 0;
@@ -591,13 +578,9 @@ if (!window.FAOSTATSearch) {
         },
 
         buildSearchSingleBoxOutput: function(values, type) {
-//			for(var i = 0; i < values.length; i++ ) {
-//				console.log("3]" + values[i].label + " | " + values[i].code + " | " + values[i].gn + " | " + values[i].dc + " | " + values[i].dn + " | " + values[i].ec + " | " + values[i].en);
-//			}
-//			console.log("BUILD OUTPUT");
             var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
             var id = randLetter + Date.now();
-            $("#search-results").append("<div id='search-results_"+ id +"'><div>");
+            $("#search-results-" + type).append("<div id='search-results_"+ id +"'><div>");
             var obj = new FAOSTATSearchSingleResult();
             obj.init(id, values, type);
 
@@ -606,9 +589,12 @@ if (!window.FAOSTATSearch) {
         filterResultsByDomain: function(code){
 /*            console.log(FAOSTATSearch.valuesResults);
             console.log(FAOSTATSearch.valuesResults.length);*/
-            for(var i=0; i < FAOSTATSearch.valuesResults.length; i++){
+            console.log(code)
+            console.log(FAOSTATSearch.valuesResults)
+            for(var i=0; i < FAOSTATSearch.valuesResults.length; i++) {
                 var value = FAOSTATSearch.valuesResults[i];
-                if ( value.values[0].dc != code) {
+                console.log(value.values)
+                if ( value.values[2] != code) {
                     $('#search-results_' + value.suffix).hide();
 //                    $('#search-results_' + value.suffix).append('remove ');
                 }
@@ -621,7 +607,7 @@ if (!window.FAOSTATSearch) {
         },
         filterResultsByGroup: function(code){
             $.each(FAOSTATSearch.valuesResults, function(index, value) {
-                if ( value.values[0].gc != code) {
+                if ( value.values[0] != code) {
                     $('#search-results_' + value.suffix).hide();
                 }
                 else {
@@ -629,6 +615,8 @@ if (!window.FAOSTATSearch) {
                 }
             });
         }
+
+
 
     };
 

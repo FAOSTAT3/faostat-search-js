@@ -10,6 +10,7 @@ var FAOSTATSearchSingleResult = function() {
 				this.suffix = suffix;
 				this.type = type;
 
+
 				/**
 				 * Load the interface HTML and replace the ID's
 				 */
@@ -44,11 +45,11 @@ var FAOSTATSearchSingleResult = function() {
 
                 // changing title TODO: pass code and title?
 	            var _this = this;
-				var code = this.values[0].code;
-				var label = this.values[0].label;
-				var groupname = this.values[0].gn;
-				var domainname = this.values[0].dn;
-				var domaincode = this.values[0].dc;
+				var code = this.values[4];
+				var label = this.values[5];
+				var groupname = this.values[1];
+				var domainname = this.values[3];
+				var domaincode = this.values[2];
 				
 				$("#single-result-title_" + suffix).append(label);
 				$("#single-result-code_" + suffix).append(code);
