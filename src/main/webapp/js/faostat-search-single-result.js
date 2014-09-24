@@ -47,6 +47,7 @@ var FAOSTATSearchSingleResult = function() {
 	            var _this = this;
 				var code = this.values[4];
 				var label = this.values[5];
+                var groupcode = this.values[0];
 				var groupname = this.values[1];
 				var domainname = this.values[3];
 				var domaincode = this.values[2];
@@ -61,12 +62,12 @@ var FAOSTATSearchSingleResult = function() {
 				// TODO: get current url
 				$("#single-result-domain_" + suffix).bind('click', function() {
                     FAOSTATSEARCH_STATS.goToDownload(domaincode);
-					window.open('http://'+ FAOSTATSearch.gatewayURL + '/faostat-gateway/go/to/download/'+ _this.values[0].gc +'/'+ _this.values[0].dc +'/' + FAOSTATSearch.lang,'_self',false)
+					window.open('http://'+ FAOSTATSearch.gatewayURL + '/faostat-gateway/go/to/download/'+ groupcode +'/'+ domaincode +'/' + FAOSTATSearch.lang,'_self',false)
 		        });
 
                 $("#single-result-go-to-download_" + suffix).bind('click', function() {
                     FAOSTATSEARCH_STATS.goToDownload(domaincode);
-                    window.open('http://'+ FAOSTATSearch.gatewayURL + '/faostat-gateway/go/to/download/'+ _this.values[0].gc +'/'+ _this.values[0].dc +'/' + FAOSTATSearch.lang,'_self',false)
+                    window.open('http://'+ FAOSTATSearch.gatewayURL + '/faostat-gateway/go/to/download/'+ groupcode +'/'+domaincode +'/' + FAOSTATSearch.lang,'_self',false)
                 });
 
               /*  $("#single-result-group_" + suffix).bind('click', function() {

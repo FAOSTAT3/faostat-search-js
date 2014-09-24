@@ -123,7 +123,6 @@ if (!window.FAOSTATSearch) {
                             list.push(response[i].label);
                             current = response[i].label;
                         }
-
                     }
                 },
                 error : function(err,b,c) {
@@ -199,6 +198,7 @@ if (!window.FAOSTATSearch) {
                 });
             });
         },
+
         populateGrid : function(codingSystem, gridCode, domainCode) {
             $.ajax({
                 type: 'GET',

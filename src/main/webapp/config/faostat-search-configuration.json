@@ -1,5 +1,5 @@
 {
-	"datasource": "faostat2",
+	"datasource": "faostat",
 	"baseurlcodes": "168.202.28.214:8090",
 	"baseurlwds": "faostat3.fao.org",
     "gatewayURL": "faostat3.fao.org",
