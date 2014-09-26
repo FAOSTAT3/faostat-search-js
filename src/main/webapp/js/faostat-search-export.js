@@ -20,8 +20,6 @@ if (!window.FAOSTATExport) {
         values: '',
         type: '',
         showPreview: function(values, suffix, type) {
-            console.log("SHOW PREVIEW");
-            console.log(values);
             this.limit = 10;
             this.values = values;
             this.type = type;
@@ -55,8 +53,6 @@ if (!window.FAOSTATExport) {
             data.json = JSON.stringify(FAOSTATExport.json);
             data.cssFilename = FAOSTATExport.cssFilename;
             data.valueIndex = FAOSTATExport.valueColumnIndex;
-
-            console.log(data);
 
             var outputType = 'html';
             if ( type == 'export' ) {
@@ -335,8 +331,8 @@ if (!window.FAOSTATExport) {
         },
 
         domains: function(){
-            console.log(this.values[2]);
-            console.log(this.values[4]);
+//            console.log(this.values[2]);
+//            console.log(this.values[4]);
             return this.values[2];
         },
         years: function() {

@@ -78,7 +78,7 @@ if (!window.FAOSTATSearch) {
 
         initUI : function(word) {
 
-            /** Tooltip **/
+           /** Tooltip **/
             $('#search-button').powerTip({placement: 'e'});
             $('#search-filter-areas-showhide').powerTip({placement: 'e'});
 
@@ -178,7 +178,6 @@ if (!window.FAOSTATSearch) {
             $('#search-tree').bind('select', function (event) {
                 var args = event.args;
                 var item = $('#search-tree').jqxTree('getItem', args.element);
-                console.log(item)
                 // focus on top
                 $(window).scrollTop($('#searchbox').offset().top);
                 // filter results
@@ -186,7 +185,6 @@ if (!window.FAOSTATSearch) {
                     FAOSTATSearch.filterResultsByDomain(item.value);
                 }
                 else {
-                    console.log(item)
                     FAOSTATSearch.filterResultsByGroup(item.value);
                 }
             });
@@ -197,6 +195,13 @@ if (!window.FAOSTATSearch) {
                     $('#search-results_' + value.suffix).css('display', 'block');
                 });
             });
+
+            // search for the word passed
+            if ( word != null && word != '') {
+                FAOSTATSearch.searchValue(word);
+                $("#searchbox").val(word);
+
+            }
         },
 
         populateGrid : function(codingSystem, gridCode, domainCode) {
@@ -390,7 +395,6 @@ if (!window.FAOSTATSearch) {
 
         getAreas: function(value) {
             var url = 'http://localhost:8090/wds/rest/search/areas/'+ FAOSTATSearch.datasource +'/area/'+ value +"/"+ FAOSTATSearch.lang;
-            console.log(url);
             $.ajax({
                 type: 'GET',
                 url: url,
@@ -406,11 +410,7 @@ if (!window.FAOSTATSearch) {
                     html += '<option value=""></option>';
 
                     for(var i=0; i < response.length; i++) {
-//                        console.log(response[i]);
-
-                        console.log(response[i][3]);
                         if ( response[i][3]) {
-                            console.log(response[i]);
                             html += '<option selected value="' + response[i][0] + '">' + response[i][1] + '</option>';
                         }
                         else
@@ -439,8 +439,6 @@ if (!window.FAOSTATSearch) {
         },
 
         buildTree: function(response) {
-            console.log(response);
-
             $('#search-tree').show()
 
             var dict = {};
@@ -521,7 +519,6 @@ if (!window.FAOSTATSearch) {
             gc = values[0].gc;
             for(var i = 1; i < values.length; i++ ) {
                 if ( gc != values[i].gc ) {
-//					console.log("1-> " +values[i].label + " | " + values[i].code + " | " + values[i].gn + " | " + values[i].dc + " | " + values[i].dn);
                     this.buildSearchSingleOutput(v, type);
                     gc = values[i].gc;
                     v = [];
@@ -533,11 +530,9 @@ if (!window.FAOSTATSearch) {
                         v.push(values[i]);
                     }
                 }
-                //console.log("values: " + values[i].code + " | " + values[i].label);
             }
             this.buildSearchSingleOutput(v, type);
             sum++;
-//			console.log("GC SUM: " + sum + " | for: " );
         },
 
         // this build the single group/domain view of the item
@@ -569,12 +564,9 @@ if (!window.FAOSTATSearch) {
                         v.push(values[i]);
                     }
                 }
-                //console.log("values: " + values[i].code + " | " + values[i].label);
             }
             this.buildSearchSingleBoxOutput(v, type);
             sum++;
-            //console.log("DC SUM: " + sum);
-
         },
 
         buildSearchSingleBoxOutput: function(values, type) {
@@ -587,13 +579,8 @@ if (!window.FAOSTATSearch) {
             FAOSTATSearch.valuesResults.push(obj);
         },
         filterResultsByDomain: function(code){
-/*            console.log(FAOSTATSearch.valuesResults);
-            console.log(FAOSTATSearch.valuesResults.length);*/
-            console.log(code)
-            console.log(FAOSTATSearch.valuesResults)
             for(var i=0; i < FAOSTATSearch.valuesResults.length; i++) {
                 var value = FAOSTATSearch.valuesResults[i];
-                console.log(value.values)
                 if ( value.values[2] != code) {
                     $('#search-results_' + value.suffix).hide();
 //                    $('#search-results_' + value.suffix).append('remove ');
