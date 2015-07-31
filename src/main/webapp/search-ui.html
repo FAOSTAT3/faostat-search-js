@@ -1,89 +1,71 @@
-<table style='width: 100%; padding: 16px;'>
-	<tr>
-		<td>
-			<div>
-				<table>
-					<tr>
-					 	<td valign="top">
-					 		<div class="ui-widget">
-				    			<input id="searchbox"/>
-						</td>
-						<td valign="middle">
-							<div id="search-button" value="Search" title="Search"><img src="images/search-icon.png"></div>
-						</td>
-				  </tr>
-					 <!--  <td>
-					  	<div id='search-example'></div>
-					 </td> -->
-					  
-				 </table>
-			</div>
-			<div id="search-no-values" class="search-no-values"></div>
-			<div id="search-content">
-				  <table>
-					<tr>
-					 	<td valign="top">
-							<div id='search-items' class='search-categories'>items</div>
-						</td>
-						<td valign="top">
-							<div id='search-elements' class='search-categories'>elements</div>
-						</td>
-				  </tr>
-				 </table>
-				 
 
-				<table>
-				 <tr>
+<div class="pageTitleCommands">
+    <h1 id='pageTitle'></h1>
+</div>
+<div id='main-content-leftsidebar'>
 
-				 	<!-- TODO: make it nicer... -->
-				 	<td style='width:300px' valign="top">
-				 		<!-- Areas --> 
-				 		<div style='width:300px' id='search-filter-areas-showhide' class='search-filter-title' value="Search" title="Filter the output data results selecting the interested areas or regions">Filter output data by area/region</div>			 		
-				 		<div id='search-filter-areas-container'> 
-				 			<div style='height:5px'></div>
-							<div class="search-areas-tab" id="tabCountries" style='margin-left: 15px;'>		
-										<ul>
-											<li id='li_countries'>Countries</li>
-											<li id='li_regions'>Regions</li>
-											<li id='li_special_groups'>Special Groups</li>
-										</ul>
-													
-										<div id="gridCountries"></div>
-															
-										<div class="faostat-download-list" id="gridRegions"></div>
-															
-										<div class="faostat-download-list" id="gridSpecialGroups"></div>
-																			
-							</div>		
-						</div>
-						<div style='height:20px'></div>
-						
-						<!-- Years --> 
-						<div style='width:300px' id='search-filter-years-showhide' class='search-filter-title'>Filter output data by year</div>
-				 		<div id='search-filter-years-container'> 
-					 		<div id='search-years-range-spacing-top' style='height:45px'></div>
-					 		<div id='search-years-range' style='width:300px' class='search-years-range'></div>
-					 		<div id='search-years-range-spacing-bottom' style='height:30px'></div>
-					 	</div>
-					 	<div style='height:20px'></div>
-				 		
-				 		<!-- Domains --> 
-				 		<div style='width:300px' id='search-tree-showhide' class='search-filter-title'>Filter results by domain</div>
-				 		<div id='search-tree-container'> 
-				 			<div style='height:5px'></div>
-							<div id='search-tree'></div>
-							<div id='search-tree-select-all'>Show all domains</div>
-						</div>
-					</td>
-					<td>
-						<div style='width:15px'></div>
-					</td>
-					<td valign="top">
-						<div id='search-results'></div>
-					</td>
-				  </tr>
-				</table>
-			
-		</td>
-	</tr>
-</table>
+    <div class="search-box-holder">
+
+        <div class="ui-widget search-box-bar"><input id="searchbox"/></div>
+        <a id="search-button" style="margin-top:-7px" class='btn search-box-btn' title="Search">
+            <div class='btn-search-icon btnLeftIcon'></div>
+            <div id='search-text-button' class='btnText'></div>
+        </a>
+        <div id="search-no-values" class="search-no-values"></div>
+    </div>
+
+    <div class='spacer-one'></div>
+
+    <div id="search-content">
+
+        <div class="left-sidebar">
+            <!-- Years -->
+            <div id='search-filter-years-showhide' class='search-filter-title'></div>
+            <hr class='standard-hr'>
+            <div id='search-filter-years-container' style='margin-left:2px;'>
+                <div id='search-years-range-spacing-top' style='height:35px'></div>
+                <div id='search-years-range'></div>
+                <div id='search-years-range-spacing-bottom' style='height:30px'></div>
+            </div>
+
+            <!-- Domains -->
+            <div id='search-tree-showhide' class='search-filter-title'></div>
+            <hr class='standard-hr'>
+            <div id='search-tree-container'>
+                <!-- Add spacer-small -->
+                <div style='height:5px'></div>
+                <div id='search-tree'></div>
+                <a id='search-tree-select-all' class='btn'>
+                    <div class='icon-circle btnLeftIcon'></div>
+                    <div id='search_show_all_domains' class='btnText'></div>
+                </a>
+            </div>
+        </div>
+
+        <div class="right-content">
+            <div class='search-categories'>
+                <span id='search-items' class='search-categories-label'></span>
+                <span id='search-elements' class='search-categories-label'></span>
+            </div>
+
+            <!--<div id='search-title-type'></div>-->
+            <div id='search-results'></div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    document.getElementById('pageTitle').innerHTML = $.i18n.prop('_search');
+    document.getElementById('search-text-button').innerHTML = $.i18n.prop('_search');
+    document.getElementById('search-filter-years-showhide').innerHTML = $.i18n.prop('_filter_date');
+
+    document.getElementById('search-tree-showhide').innerHTML = $.i18n.prop('_filter_by_domain');
+    document.getElementById('search-tree-showhide').title = $.i18n.prop('_filter_by_domain_tooltip');
+    $('#search-tree-showhide').powerTip({placement: 's'});
+
+    document.getElementById('search_show_all_domains').innerHTML = $.i18n.prop('_filter_show_all_domains');
+    document.getElementById('search-items').innerHTML = $.i18n.prop('_results_by_item');
+    document.getElementById('search-elements').innerHTML = $.i18n.prop('_results_by_element');
+</script>
