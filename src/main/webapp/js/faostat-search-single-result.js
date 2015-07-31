@@ -81,22 +81,21 @@ var FAOSTATSearchSingleResult = function() {
 				this.$container.find('#single-result-table-showhide_' + suffix).prop('title', $.i18n.prop('_showHideTable'));
 				this.$container.find('#single-result-table-showhide_' + suffix).powerTip({placement: 's'});
 
-
-				this.$container.find('#go-to-download-text_' + suffix).html = $.i18n.prop('_goToDownload')
+				this.$container.find('#go-to-download_text_' + suffix).html($.i18n.prop('_goToDownload'));
 				this.$container.find('#single-result-go-to-download_' + suffix).prop('title' ,$.i18n.prop('_goToDownload'));
 				this.$container.find('#single-result-go-to-download_' + suffix).powerTip({placement: 's'});
-
+				
 				var _this = this;
 				// go to the download page
 				// TODO: get current url
 				this.$container.find("#single-result-domain_" + suffix).bind('click', function() {
                     FAOSTATSEARCH_STATS.goToDownload(domaincode);
-					window.open('http://'+ FAOSTATSearch.gatewayURL + '/faostat-gateway/go/to/download/'+ groupcode +'/'+ domaincode +'/' + FAOSTATSearch.lang,'_self',false)
+					window.open('http://'+ FAOSTATSearch.gatewayURL + '/download/'+ groupcode +'/'+ domaincode +'/' + FAOSTATSearch.lang, '_self', false)
 		        });
 
 				this.$container.find("#single-result-go-to-download_" + suffix).bind('click', function() {
                     FAOSTATSEARCH_STATS.goToDownload(domaincode);
-                    window.open('http://'+ FAOSTATSearch.gatewayURL + '/faostat-gateway/go/to/download/'+ groupcode +'/'+domaincode +'/' + FAOSTATSearch.lang,'_self',false)
+                    window.open('http://'+ FAOSTATSearch.gatewayURL + '/download/'+ groupcode +'/'+ domaincode +'/' + FAOSTATSearch.lang, '_self', false)
                 });
 
 				for (var i = 0; i < this.values.length; i++) {

@@ -2,9 +2,9 @@ if (!window.FAOSTATSearch) {
 
     window.FAOSTATSearch = {
 
-        SEARCH_SCORE_THRESHOLD: 0.35,
-        SEARCH_SCORE_MAX_RESULTS: 25,
-        SEARCH_SCORE_MAX_RESULTS_TOTAL: 100,
+        SEARCH_SCORE_THRESHOLD: 0.45,
+        SEARCH_SCORE_MAX_RESULTS: 30,
+        SEARCH_SCORE_MAX_RESULTS_TOTAL: 80,
 
         prefix: 'http://localhost:8080/faostat-search-js/',
         //prefix: 'http://faostat3.fao.org/modules/faostat-search-js/',
@@ -20,7 +20,7 @@ if (!window.FAOSTATSearch) {
         elements: '',
         theme : "faostat",
 
-        singleResultBaseURL: 'search-single-result2.html',
+        singleResultBaseURL: 'search-single-result.html',
         singleResultUI: '',
 
         // group and domains are not used, it's just to be compliant with gateway
@@ -66,7 +66,7 @@ if (!window.FAOSTATSearch) {
                         callback: function () {
 
                             // modify languages
-                            $('#container').load(FAOSTATSearch.prefix + 'search-ui2.html', function () {
+                            $('#container').load(FAOSTATSearch.prefix + 'search-ui.html', function () {
                                 FAOSTATSearch.initUI(word);
                             });
                         }
@@ -181,11 +181,11 @@ if (!window.FAOSTATSearch) {
             // add export
             $("#search-items").bind('click', function() {
                 // TODO: change style to item
-                FAOSTATSearch.searchByItem(FAOSTATSearch.word);
+                FAOSTATSearch.searchBy(FAOSTATSearch.items, 'items', 'elements', FAOSTATSearch.word);
             });
             $("#search-elements").bind('click', function() {
                 // TODO: change style to element
-                FAOSTATSearch.searchByElement(FAOSTATSearch.word);
+                FAOSTATSearch.searchBy(FAOSTATSearch.elements, 'elements', 'items', FAOSTATSearch.word);
             });
 
             $(".search-areas-tab").jqxTabs({
@@ -276,7 +276,7 @@ if (!window.FAOSTATSearch) {
                     shouldSort: true
                 }
                 var f = new FAOSTATSearch.Fuse(FAOSTATSearch.codes, options);
-                var results = f.search(FAOSTATSearch.word);
+                var results = f.search(FAOSTATSearch.word.slice(0, 31))
                 f = null;
 
                 var objs = [];
@@ -286,40 +286,37 @@ if (!window.FAOSTATSearch) {
                     }
                 });
 
-                console.log(objs);
-
                 // this is used to pass the items to the search
-                items = FAOSTATSearch.searchCheckCategories(objs, 'items');
+                FAOSTATSearch.items = FAOSTATSearch.searchCheckCategories(objs, 'items');
 
                 // this is used to pass the elemtens to the search
-                elements = FAOSTATSearch.searchCheckCategories(objs, 'elements');
+                FAOSTATSearch.elements = FAOSTATSearch.searchCheckCategories(objs, 'elements');
 
                 // display categories search bar
-                if ( items != '' && items !=null) {
+                if (  FAOSTATSearch.items != '' &&  FAOSTATSearch.items !=null) {
                     $('#search-items').css('display', 'inline-block');
                 }
                 else {
                     $('#search-items').css('display', 'none');
                 }
 
-                if ( elements != '' && elements != null )           {
+                if ( FAOSTATSearch.elements != '' && FAOSTATSearch.elements != null )           {
                     $('#search-elements').css('display', 'inline-block');
                 }
                 else {
                     $('#search-elements').css('display', 'none');
                 }
 
-
                 // getting all the items
-                if ( items != '' ) {
+                if ( FAOSTATSearch.items != '' ) {
                     $('#search-content').css('display', 'inline');
                     $('#search-no-values').css('display', 'none');
-                    FAOSTATSearch.searchByItem(FAOSTATSearch.word);
+                    FAOSTATSearch.searchBy(FAOSTATSearch.items, 'items', 'elements', FAOSTATSearch.word);
                 }
-                else if ( elements != '') {
+                else if ( FAOSTATSearch.elements != '') {
                     $('#search-content').css('display', 'inline');
                     $('#search-no-values').css('display', 'none');
-                    FAOSTATSearch.searchByElement(FAOSTATSearch.word);
+                    FAOSTATSearch.searchBy(FAOSTATSearch.elements, 'elements', 'items', FAOSTATSearch.word);
                 }
                 else {
                     document.getElementById('search-no-values').innerHTML = $.i18n.prop('_no_results_available');
@@ -341,37 +338,18 @@ if (!window.FAOSTATSearch) {
             return results;
         },
 
-        searchByItem: function(word) {
-            $('#search-items').addClass('search-categories-label-selected');
-            $('#search-elements').removeClass('search-categories-label-selected');
+        searchBy: function(codes, type, deselectType, word) {
+            $('#search-' + type).addClass('search-categories-label-selected');
+            $('#search-' + deselectType ).removeClass('search-categories-label-selected');
             var _this = this;
             $.ajax({
                 type: 'GET',
-                url: 'http://'+ FAOSTATSearch.baseurlcodes +'/bletchley/rest/codes/search/'+ items +'/items/'+ FAOSTATSearch.datasource +'/'+ FAOSTATSearch.lang,
+                url: 'http://' + FAOSTATSearch.baseurlcodes + '/bletchley/rest/codes/search/' + codes + '/' + type + '/' + FAOSTATSearch.datasource + '/' + FAOSTATSearch.lang,
                 dataType: 'json',
-                success : function(response) {
-                    _this.buildSearchOutput(response, 'items', word);
-
+                success: function (response) {
+                    _this.buildSearchOutput(response, type, word);
                 },
-                error : function(err,b,c) {
-                    alert(err.status + ", " + b + ", " + c);
-                }
-            });
-        },
-
-        searchByElement: function(word) {
-            $('#search-elements').addClass('search-categories-label-selected');
-            $('#search-items').removeClass('search-categories-label-selected');
-            var _this = this;
-            $.ajax({
-                type: 'GET',
-                url: 'http://'+ FAOSTATSearch.baseurlcodes +'/bletchley/rest/codes/search/'+ elements +'/elements/'+ FAOSTATSearch.datasource +'/'+ FAOSTATSearch.lang,
-                dataType: 'json',
-                success : function(response) {
-                    _this.buildSearchOutput(response, 'elements', word);
-
-                },
-                error : function(err,b,c) {
+                error: function (err, b, c) {
                     alert(err.status + ", " + b + ", " + c);
                 }
             });
@@ -446,8 +424,6 @@ if (!window.FAOSTATSearch) {
         // first function to create the output view (per single
         buildSearchOutput : function(response, type, word) {
 
-            console.log(response);
-
             // removing the old results
             $("#search-results").empty();
 
@@ -458,9 +434,7 @@ if (!window.FAOSTATSearch) {
                 shouldSort: true
             }
             var f = new FAOSTATSearch.Fuse(response, options);
-            var results = f.search(word);
-
-            console.log(results);
+            var results = f.search(word.slice(0, 31));
 
             // force garbage collector
             f = null;
@@ -474,8 +448,6 @@ if (!window.FAOSTATSearch) {
                     values.push(results[i].item);
                 }
             }
-
-            console.log(values);
 
             // build lateral filters
             this.buildFilters(values);
