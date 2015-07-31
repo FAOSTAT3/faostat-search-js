@@ -274,10 +274,11 @@ if (!window.FAOSTATSearch) {
                 var options = {
                     keys: ['label'],   // keys to search in
                     includeScore: true,
-                    shouldSort: true
+                    shouldSort: true,
+                    maxPatternLength: FAOSTATSearch.word.length
                 }
                 var f = new FAOSTATSearch.Fuse(FAOSTATSearch.codes, options);
-                var results = f.search(FAOSTATSearch.word.slice(0, 31));
+                var results = f.search(FAOSTATSearch.word);
 
                 f = null;
 
@@ -433,10 +434,11 @@ if (!window.FAOSTATSearch) {
             var options = {
                 keys: ['label'],   // keys to search in
                 includeScore: true,
-                shouldSort: true
+                shouldSort: true,
+                maxPatternLength: word.length
             }
             var f = new FAOSTATSearch.Fuse(response, options);
-            var results = f.search(word.slice(0, 31));
+            var results = f.search(word);
 
             // force garbage collector
             f = null;
