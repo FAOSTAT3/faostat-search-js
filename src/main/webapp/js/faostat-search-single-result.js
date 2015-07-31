@@ -72,19 +72,19 @@ var FAOSTATSearchSingleResult = function() {
 				this.$container.find("#preview-text_" + suffix).html($.i18n.prop('_preview'));
 
 				this.$container.find("#single-result-preview_" + suffix).prop('title', $.i18n.prop('_previewTooltip'));
-				this.$container.find('#single-result-preview_' + suffix).powerTip({placement: 's'});
+				//this.$container.find('#single-result-preview_' + suffix).powerTip({placement: 's'});
 
 				this.$container.find('#export-text_' + suffix).html($.i18n.prop('_export'));
 				this.$container.find('#single-result-export' + suffix).prop('title',$.i18n.prop('_exportTooltip'));
-				this.$container.find('#single-result-export_' + suffix).powerTip({placement: 's'});
+				//this.$container.find('#single-result-export_' + suffix).powerTip({placement: 's'});
 
 				this.$container.find('#single-result-table-showhide_' + suffix).prop('title', $.i18n.prop('_showHideTable'));
-				this.$container.find('#single-result-table-showhide_' + suffix).powerTip({placement: 's'});
+				//this.$container.find('#single-result-table-showhide_' + suffix).powerTip({placement: 's'});
 
 				this.$container.find('#go-to-download_text_' + suffix).html($.i18n.prop('_goToDownload'));
 				this.$container.find('#single-result-go-to-download_' + suffix).prop('title' ,$.i18n.prop('_goToDownload'));
-				this.$container.find('#single-result-go-to-download_' + suffix).powerTip({placement: 's'});
-				
+				//this.$container.find('#single-result-go-to-download_' + suffix).powerTip({placement: 's'});
+
 				var _this = this;
 				// go to the download page
 				// TODO: get current url

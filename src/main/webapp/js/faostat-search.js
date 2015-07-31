@@ -2,12 +2,12 @@ if (!window.FAOSTATSearch) {
 
     window.FAOSTATSearch = {
 
-        SEARCH_SCORE_THRESHOLD: 0.45,
-        SEARCH_SCORE_MAX_RESULTS: 30,
+        SEARCH_SCORE_THRESHOLD: 0.35,
+        SEARCH_SCORE_MAX_RESULTS: 25,
         SEARCH_SCORE_MAX_RESULTS_TOTAL: 80,
 
-        prefix: 'http://localhost:8080/faostat-search-js/',
-        //prefix: 'http://faostat3.fao.org/modules/faostat-search-js/',
+        //prefix: 'http://localhost:8080/faostat-search-js/',
+        prefix: 'http://faostat3.fao.org/modules/faostat-search-js/',
         gatewayURL: '',
         list: '',
         codes: '',
@@ -267,6 +267,7 @@ if (!window.FAOSTATSearch) {
             if ( FAOSTATSearch.word.length > 2 ) {
                 // TODO: change here
 
+
                 // close the autocomplete
                 $( "#searchbox" ).autocomplete( "close" );
                 // sort resposnse using fuse.js
@@ -275,9 +276,9 @@ if (!window.FAOSTATSearch) {
                     includeScore: true,
                     shouldSort: true
                 }
-                var f = new FAOSTATSearch.Fuse(FAOSTATSearch.codes, options);
-                var results = f.search(FAOSTATSearch.word.slice(0, 31))
-                f = null;
+                FAOSTATSearch.fuseInstance = new FAOSTATSearch.Fuse(FAOSTATSearch.codes, options);
+                var results = FAOSTATSearch.fuseInstance.search(FAOSTATSearch.word.slice(0, 31))
+                FAOSTATSearch.fuseInstance = null;
 
                 var objs = [];
                 $.each(results, function(k, v) {
@@ -433,11 +434,11 @@ if (!window.FAOSTATSearch) {
                 includeScore: true,
                 shouldSort: true
             }
-            var f = new FAOSTATSearch.Fuse(response, options);
-            var results = f.search(word.slice(0, 31));
+            FAOSTATSearch.fuseInstance = new FAOSTATSearch.Fuse(response, options);
+            var results = FAOSTATSearch.fuseInstance.search(word.slice(0, 31));
 
             // force garbage collector
-            f = null;
+            FAOSTATSearch.fuseInstance = null;
 
             // TODO: why that loop?
             var values = [];
@@ -446,6 +447,8 @@ if (!window.FAOSTATSearch) {
                 if (i < FAOSTATSearch.SEARCH_SCORE_MAX_RESULTS) {
                     this.buildSearchSingleBoxOutput(results[i].item, type);
                     values.push(results[i].item);
+                }else {
+                    break;
                 }
             }
 
