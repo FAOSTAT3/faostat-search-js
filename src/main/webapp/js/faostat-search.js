@@ -276,9 +276,10 @@ if (!window.FAOSTATSearch) {
                     includeScore: true,
                     shouldSort: true
                 }
-                FAOSTATSearch.fuseInstance = new FAOSTATSearch.Fuse(FAOSTATSearch.codes, options);
-                var results = FAOSTATSearch.fuseInstance.search(FAOSTATSearch.word.slice(0, 31))
-                FAOSTATSearch.fuseInstance = null;
+                var f = new FAOSTATSearch.Fuse(FAOSTATSearch.codes, options);
+                var results = f.search(FAOSTATSearch.word.slice(0, 31));
+
+                f = null;
 
                 var objs = [];
                 $.each(results, function(k, v) {
@@ -434,11 +435,11 @@ if (!window.FAOSTATSearch) {
                 includeScore: true,
                 shouldSort: true
             }
-            FAOSTATSearch.fuseInstance = new FAOSTATSearch.Fuse(response, options);
-            var results = FAOSTATSearch.fuseInstance.search(word.slice(0, 31));
+            var f = new FAOSTATSearch.Fuse(response, options);
+            var results = f.search(word.slice(0, 31));
 
             // force garbage collector
-            FAOSTATSearch.fuseInstance = null;
+            f = null;
 
             // TODO: why that loop?
             var values = [];
