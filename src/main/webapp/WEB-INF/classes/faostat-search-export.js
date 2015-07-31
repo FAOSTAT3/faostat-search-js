@@ -6,9 +6,9 @@ if (!window.FAOSTATExport) {
         thousandSeparator : ',',
         decimalSeparator : '.',
         decimalNumbers : '2',
-        showFlags : true,
-        showCodes : true,
-        showUnits : true,
+        showFlags : false,
+        showCodes : false,
+        showUnits : false,
         showNullValues : false,
         valueColumnIndex : -1,
         summary_countries_map : new Array(),
@@ -112,24 +112,21 @@ if (!window.FAOSTATExport) {
 
         },
         createJSONTradeMatrix : function() {
-           FAOSTATExport.json = {}
 
             /**
              * Include domain name
              */
             FAOSTATExport.json["selects"] = [{"aggregation":null, "column":"DOM.DomainName" + FAOSTATSearch.lang, "alias":"Domain"}];
 
-            if (FAOSTATExport.showCodes)
-                FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation":null, "column":"D.ReporterAreaCode", "alias":"Reporter_Area_Code"};
-
-
             FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation":null, "column":"A1.AreaName" + FAOSTATSearch.lang, "alias":"Reporter_Area"};
 
             if (FAOSTATExport.showCodes)
-                FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation":null, "column":"D.PartnerAreaCode", "alias":"Partner_Area_Code"};
+                FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation":null, "column":"D.ReporterAreaCode", "alias":"Reporter_Area_Code"};
 
             FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation":null, "column":"A2.AreaName" + FAOSTATSearch.lang, "alias":"Partner_Area"};
 
+            if (FAOSTATExport.showCodes)
+                FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation":null, "column":"D.PartnerAreaCode", "alias":"Partner_Area_Code"};
 
             if (FAOSTATExport.showCodes)
                 FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation":null, "column":"D.ItemCode", "alias":"Item_Code"};
@@ -148,9 +145,8 @@ if (!window.FAOSTATExport) {
 
             FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation":null, "column":"D.Value", "alias":"Value"};
 
-            if (FAOSTATExport.showFlags) {
-                FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation": null, "column": "D.Flag", "alias": "Flag"};
-            }
+            if (FAOSTATExport.showFlags)
+                FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation":null, "column":"D.Flag", "alias":"Flag"};
 
             FAOSTATExport.valueColumnIndex = FAOSTATExport.getValueColumnIndex(FAOSTATExport.json);
 
@@ -201,7 +197,6 @@ if (!window.FAOSTATExport) {
         },
 
         createJSONStandard : function() {
-            FAOSTATExport.json = {}
 
             /**
              * Include the Domain name
@@ -228,11 +223,8 @@ if (!window.FAOSTATExport) {
 
             FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation":null, "column":"D.Value", "alias":"Value"};
 
-            if (FAOSTATExport.showFlags) {
-                FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation": null, "column": "D.Flag", "alias": "Flag"};
-//                FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation":null, "column":"D.FlagDescription", "alias":"Flag"};
-                FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation":null, "column":"F.FlagDescription" + FAOSTATSearch.lang, "alias":"FlagDescription"};
-            }
+            if (FAOSTATExport.showFlags)
+                FAOSTATExport.json["selects"][FAOSTATExport.json["selects"].length] = {"aggregation":null, "column":"D.Flag", "alias":"Flag"};
 
             FAOSTATExport.valueColumnIndex = FAOSTATExport.getValueColumnIndex(FAOSTATExport.json);
 
@@ -240,7 +232,6 @@ if (!window.FAOSTATExport) {
                 {"column":"Item", "alias":"I"},
                 {"column":"Element", "alias":"E"},
                 {"column":"Area", "alias":"A"},
-                {"column":"Flag", "alias":"F"},
                 {"column":"Domain", "alias":"DOM"}];
 
 
@@ -250,30 +241,27 @@ if (!window.FAOSTATExport) {
             var countries = null;
             var years = this.years();
 
-            FAOSTATExport.json["wheres"] =
-                [{"datatype":"TEXT","column":"D.DomainCode","operator":"=","value":domain,"ins":[]},
+            FAOSTATExport.json["wheres"] = [{"datatype":"TEXT","column":"D.DomainCode","operator":"=","value":domain,"ins":[]},
                 {"datatype":"TEXT","column":"DOM.DomainCode","operator":"=","value":domain,"ins":[]},
                 {"datatype":"DATE","column":"D.AreaCode","operator":"=","value":"A.AreaCode","ins":[]},
                 {"datatype":"DATE","column":"D.DomainCode","operator":"=","value":"DOM.DomainCode","ins":[]},
-                {"datatype":"DATE","column":"D.Flag","operator":"=","value":"F.Flag","ins":[]},
                 {"datatype":"DATE","column":"D.ItemCode","operator":"=","value":"I.ItemCode","ins":[]},
+//			                    {"datatype":"DATE","column":"D.ElementListCode","operator":"=","value":"E.ElementListCode","ins":[]}];
                 {"datatype":"DATE","column":"D.ElementCode","operator":"=","value":"E.ElementCode","ins":[]}];
 
-
             if (elements != null)
-                FAOSTATExport.json["wheres"][FAOSTATExport.json["wheres"].length] = {"datatype":"TEXT","column":"D.ElementCode","operator":"IN","value":null,"ins": elements};
+                FAOSTATExport.json["wheres"][FAOSTATExport.json["wheres"].length] = {"datatype":"TEXT","column":"D.ElementCode","operator":"IN","value":"E.ElementCode","ins": elements};
             if (countries != null)
-                FAOSTATExport.json["wheres"][FAOSTATExport.json["wheres"].length] = {"datatype":"TEXT","column":"D.AreaCode","operator":"IN","value":null,"ins": countries};
+                FAOSTATExport.json["wheres"][FAOSTATExport.json["wheres"].length] = {"datatype":"TEXT","column":"D.AreaCode","operator":"IN","value":"A.AreaCode","ins": countries};
             if (items != null)
-                FAOSTATExport.json["wheres"][FAOSTATExport.json["wheres"].length] = {"datatype":"TEXT","column":"D.ItemCode","operator":"IN","value":null,"ins": items};
+                FAOSTATExport.json["wheres"][FAOSTATExport.json["wheres"].length] = {"datatype":"TEXT","column":"D.ItemCode","operator":"IN","value":"I.ItemCode","ins": items};
             if (years != null)
-                FAOSTATExport.json["wheres"][FAOSTATExport.json["wheres"].length] = {"datatype":"TEXT","column":"D.Year","operator":"IN","value":null,"ins": years};
+                FAOSTATExport.json["wheres"][FAOSTATExport.json["wheres"].length] = {"datatype":"TEXT","column":"D.Year","operator":"IN","value":"D.Year","ins": years};
 
-
-//            FAOSTATExport.json["orderBys"] = [{"column":"D.Year", "direction":"DESC"},
-//                {"column":"A.AreaName" + FAOSTATSearch.lang, "direction":"ASC"},
-//                {"column":"I.ItemName" + FAOSTATSearch.lang, "direction":"ASC"},
-//                {"column":"E.ElementName" + FAOSTATSearch.lang, "direction":"ASC"}];
+            FAOSTATExport.json["orderBys"] = [{"column":"D.Year", "direction":"DESC"},
+                {"column":"A.AreaName" + FAOSTATSearch.lang, "direction":"ASC"},
+                {"column":"I.ItemName" + FAOSTATSearch.lang, "direction":"ASC"},
+                {"column":"E.ElementName" + FAOSTATSearch.lang, "direction":"ASC"}];
 
             if (FAOSTATExport.limit) {
                 FAOSTATExport.json["limit"] = FAOSTATExport.tablelimit;
@@ -298,7 +286,7 @@ if (!window.FAOSTATExport) {
             switch(FAOSTATExport.type) {
                 case 'items':
                     try {
-                        ins.push(this.values.code);
+                        ins.push(this.values[0].code);
                         return ins;
                     } catch (e) { return null; }
                     return null;
@@ -321,7 +309,7 @@ if (!window.FAOSTATExport) {
                     break;
                 case 'elements':
                     try {
-                        ins.push(this.values.code);
+                        ins.push(this.values[0].code);
                         return ins;
                     } catch (e) { return null; }
                     return null;
@@ -333,7 +321,7 @@ if (!window.FAOSTATExport) {
 
         },
         domains: function(){
-            return this.values.dc;
+            return this.values[0].dc;
         },
         years: function() {
             var ins = new Array;

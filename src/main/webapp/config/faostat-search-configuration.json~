@@ -1,0 +1,14 @@
+{
+	"datasource": "faostatdb",
+	"baseurlcodes": "faostat3.fao.org",
+	"baseurlwds": "faostat3.fao.org",
+    "gatewayURL": "faostat3.fao.org",
+    "I18N_URL" :  "http://localhost:8080/faostat-gateway/faostat/I18N/"
+}
+
+
+
+
+
+
+
