@@ -2,12 +2,15 @@ if (!window.FAOSTATSearch) {
 
     window.FAOSTATSearch = {
 
-        SEARCH_SCORE_THRESHOLD: 0.35,
+        DEBUG: true,
+
+        SEARCH_SCORE_THRESHOLD: 0.60,
         SEARCH_SCORE_MAX_RESULTS: 25,
         SEARCH_SCORE_MAX_RESULTS_TOTAL: 80,
 
-        //prefix: 'http://localhost:8080/faostat-search-js/',
-        prefix: 'http://faostat3.fao.org/modules/faostat-search-js/',
+
+        prefix: 'http://localhost:8080/faostat-search-js/',
+        //prefix: 'http://faostat3.fao.org/modules/faostat-search-js/',
         gatewayURL: '',
         list: '',
         codes: '',
@@ -26,8 +29,12 @@ if (!window.FAOSTATSearch) {
         // group and domains are not used, it's just to be compliant with gateway
         init : function( word, lang ) {
 
-            require(['fuse'], function (Fuse) {
+            var _this = this;
+
+            require(['fuse', 'lunr', 'fuzzyset'], function (Fuse, Lunr, Fuzzyset) {
                 FAOSTATSearch.Fuse = Fuse;
+                FAOSTATSearch.Lunr = Lunr;
+                FAOSTATSearch.Fuzzyset = Fuzzyset;
 
                 /**
                  * Language: as parameter or from the URL
@@ -70,7 +77,6 @@ if (!window.FAOSTATSearch) {
                                 FAOSTATSearch.initUI(word);
                             });
                         }
-
                     });
                 });
 
@@ -88,6 +94,9 @@ if (!window.FAOSTATSearch) {
         },
 
         initUI : function(word) {
+
+            // create lunrIndex
+            this.createLunrIndex();
 
 
             /** Multilanguage **/
@@ -253,7 +262,9 @@ if (!window.FAOSTATSearch) {
                 FAOSTATSearch.word = $("#searchbox").val();
 
             // Google Analytics STATS
-            FAOSTATSEARCH_STATS.search(FAOSTATSearch.word);
+            if ( !FAOSTATSearch.DEBUG ) {
+                FAOSTATSEARCH_STATS.search(FAOSTATSearch.word);
+            }
 
             $("#search-title-type").empty();
             $("#search-title-type").append("Results for <b>" + FAOSTATSearch.word + "</b>");
@@ -270,17 +281,14 @@ if (!window.FAOSTATSearch) {
 
                 // close the autocomplete
                 $( "#searchbox" ).autocomplete( "close" );
-                // sort resposnse using fuse.js
-                var options = {
-                    keys: ['label'],   // keys to search in
-                    includeScore: true,
-                    shouldSort: true,
-                    maxPatternLength: FAOSTATSearch.word.length
-                }
-                var f = new FAOSTATSearch.Fuse(FAOSTATSearch.codes, options);
-                var results = f.search(FAOSTATSearch.word);
 
-                f = null;
+                // search word with Fuse
+                //var results = this.searchWordWithFuse(FAOSTATSearch.codes, FAOSTATSearch.word);
+                //var results = this.searchWordWithLunr(FAOSTATSearch.codes, FAOSTATSearch.word);
+                var results = this.searchWordWithLunrFull(FAOSTATSearch.word);
+                //var results = this.searchWordWithFuzzyset(FAOSTATSearch.codes, FAOSTATSearch.word);
+
+                console.log(results);
 
                 var objs = [];
                 $.each(results, function(k, v) {
@@ -430,18 +438,10 @@ if (!window.FAOSTATSearch) {
             // removing the old results
             $("#search-results").empty();
 
-            // sort resposnse using fuse.js
-            var options = {
-                keys: ['label'],   // keys to search in
-                includeScore: true,
-                shouldSort: true,
-                maxPatternLength: word.length
-            }
-            var f = new FAOSTATSearch.Fuse(response, options);
-            var results = f.search(word);
+            // search word with Fuse
+            var results = this.searchWordWithFuse(response, word);
 
-            // force garbage collector
-            f = null;
+
 
             // TODO: why that loop?
             var values = [];
@@ -495,8 +495,166 @@ if (!window.FAOSTATSearch) {
                     $('#search-results_' + value.suffix).show();
                 }
             });
-        }
+        },
 
+        searchWordWithFuse: function(codes, word) {
+            var options = {
+                keys: ['label'],   // keys to search in
+                includeScore: true,
+                shouldSort: true,
+                maxPatternLength: word.length
+            }
+            var f = new FAOSTATSearch.Fuse(codes, options);
+            var results = f.search(word);
+            f = null;
+            console.log(results);
+            return results;
+        },
+
+        searchWordWithLunr: function(codes, word) {
+
+            var query = "SELECT D.GroupCode, D.GroupNameE, D.DomainCode, D.DomainNameE, I.ItemCode, I.ItemNameE, E.ElementCode, E.ElementNameE FROM domain D, DomainItem DI, item I, domainElement DE, Element E             WHERE DI.itemcode = I.itemcode            AND D.DomainCode = DI.DomainCode            AND D.DomainCode = DE.DomainCode            AND DI.DomainCode = DE.DomainCode            AND DE.ElementCode = E.ElementCode";
+            var sql = {};
+            sql.query = query;
+
+            var data = {};
+            data.datasource = FAOSTATSearch.datasource;
+            data.json = JSON.stringify(sql);
+
+            $.ajax({
+                type : 'POST',
+                url : 'http://' + FAOSTATSearch.baseurlwds + '/wds/rest/table/json',
+                data : data,
+
+                success : function(response) {
+                    console.time("START");
+
+                    var index = FAOSTATSearch.Lunr(function () {
+                        this.field('itemname', {boost: 10});
+                        this.field('elementname', {boost: 10});
+                        this.field('groupname');
+                        this.field('domainname');
+                        this.ref('id')
+                    });
+                    console.timeEnd("START");
+
+                    var store = {};
+                    for(var i=0; i< response.length; i++) {
+                        var value = {};
+                        value.id = i;
+                        value.itemname = response[i][5];
+                        value.elementname = response[i][7];
+                        value.domainname = response[i][3];
+                        value.groupname = response[i][1];
+                        index.add(value);
+                        store[value.id] = value;
+                    }
+
+
+                    //index.add(codes);
+
+                    //console.log(codes);
+                    console.time("search");
+                    var ids = index.search(word);
+                    console.timeEnd("search");
+                    console.log(ids);
+                    var results = [];
+                    for (var i=0; i< ids.length; i++) {
+                        results.push(store[ids[i].ref]);
+                    }
+
+                    console.log(results);
+                },
+                error : function(err, b, c) {}
+            });
+
+
+
+            var index = FAOSTATSearch.Lunr(function () {
+                this.field('label', {boost: 10})
+                this.ref('id')
+            });
+
+            var store = {};
+            for(var i=0; i < codes.length; i++) {
+                codes[i].id = i;
+                index.add(codes[i]);
+                store[codes[i].id] = codes[i];
+            }
+
+            //index.add(codes);
+
+            //console.log(codes);
+            var ids = index.search(word)
+            var results = [];
+            for (var i=0; i< ids.length; i++) {
+                results.push(store[ids[i].ref]);
+            }
+            console.log(results);
+        },
+
+        searchWordWithFuzzyset: function(codes, word) {
+            var index = FuzzySet();
+
+            for(var i=0; i < codes.length; i++) {
+                index.add(codes[i].label);
+            }
+
+            //index.add(codes);
+
+            //console.log(codes);
+            var ids = index.get(word);
+            console.log(ids);
+        },
+
+        createLunrIndex: function() {
+            var query = "SELECT D.GroupCode, D.GroupNameE, D.DomainCode, D.DomainNameE, I.ItemCode, I.ItemNameE, E.ElementCode, E.ElementNameE FROM domain D, DomainItem DI, item I, domainElement DE, Element E             WHERE DI.itemcode = I.itemcode            AND D.DomainCode = DI.DomainCode            AND D.DomainCode = DE.DomainCode            AND DI.DomainCode = DE.DomainCode            AND DE.ElementCode = E.ElementCode";
+            var sql = {};
+            sql.query = query;
+
+            var data = {};
+            data.datasource = FAOSTATSearch.datasource;
+            data.json = JSON.stringify(sql);
+            $.ajax({
+                type : 'POST',
+                url : 'http://' + FAOSTATSearch.baseurlwds + '/wds/rest/table/json',
+                data : data,
+
+                success : function(response) {
+
+                    // create
+                    FAOSTATSearch.lunrIndex = FAOSTATSearch.Lunr(function () {
+                        this.field('itemname', {boost: 10});
+                        this.field('elementname', {boost: 10});
+                        this.field('groupname');
+                        this.field('domainname');
+                        this.ref('id')
+                    });
+
+                    FAOSTATSearch.lunrStore = {};
+                    for (var i = 0; i < response.length; i++) {
+                        var value = {};
+                        value.id = i;
+                        value.itemname = response[i][5];
+                        value.elementname = response[i][7];
+                        value.domainname = response[i][3];
+                        value.groupname = response[i][1];
+                        FAOSTATSearch.lunrIndex.add(value);
+                        FAOSTATSearch.lunrStore[value.id] = value;
+                    }
+                },
+                error : function(err, b, c) {}
+            });
+        },
+
+        searchWordWithLunrFull: function(word) {
+            var ids = FAOSTATSearch.lunrIndex.search(word)
+            var results = [];
+            for (var i=0; i< ids.length; i++) {
+                results.push(FAOSTATSearch.lunrStore[ids[i].ref]);
+            }
+            return results;
+        }
     };
 
 }
