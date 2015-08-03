@@ -550,6 +550,7 @@ if (!window.FAOSTATSearch) {
                         store[value.id] = value;
                     }
 
+                    [{"code":"91","label":"Bran, buckwheat","gc":"T","gn":"Trade","dc":"TM","dn":"Detailed trade matrix"},{"code":"91","label":"Bran, buckwheat","gc":"T","gn":"Trade","dc":"TP","dn":"Crops and livestock products"},{"code":"17","label":"Bran, wheat","gc":"T","gn":"Trade","dc":"TM","dn":"Detailed trade matrix"},{"code":"17","label":"Bran, wheat","gc":"T","gn":"Trade","dc":"TP","dn":"Crops and livestock products"},{"code":"89","label":"Buckwheat","gc":"P","gn":"Prices","dc":"PA","dn":"Producer Prices - Archive"},{"code":"89","label":"Buckwheat","gc":"P","gn":"Prices","dc":"PI","dn":"Producer Price Indices - Annual"},{"code":"89","label":"Buckwheat","gc":"P","gn":"Prices","dc":"PM","dn":"Producer Prices - Monthly"},{"code":"89","label":"Buckwheat","gc":"P","gn":"Prices","dc":"PP","dn":"Producer Prices - Annual"},{"code":"89","label":"Buckwheat","gc":"Q","gn":"Production","dc":"QC","dn":"Crops"},{"code":"89","label":"Buckwheat","gc":"Q","gn":"Production","dc":"QV","dn":"Value of Agricultural Production"},{"code":"89","label":"Buckwheat","gc":"T","gn":"Trade","dc":"TM","dn":"Detailed trade matrix"},{"code":"89","label":"Buckwheat","gc":"T","gn":"Trade","dc":"TP","dn":"Crops and livestock products"},{"code":"10021","label":"Bulgur Wheat Total","gc":"X","gn":"Emergency Response","dc":"FA","dn":"Food Aid Shipments (WFP)"},{"code":"16","label":"Flour, wheat","gc":"T","gn":"Trade","dc":"TM","dn":"Detailed trade matrix"},{"code":"16","label":"Flour, wheat","gc":"T","gn":"Trade","dc":"TP","dn":"Crops and livestock products"},{"code":"15","label":"Wheat","gc":"G1","gn":"Emissions - Agriculture","dc":"GA","dn":"Crop Residues"},{"code":"15","label":"Wheat","gc":"G1","gn":"Emissions - Agriculture","dc":"GB","dn":"Burning - Crop Residues"},{"code":"15","label":"Wheat","gc":"P","gn":"Prices","dc":"PA","dn":"Producer Prices - Archive"},{"code":"15","label":"Wheat","gc":"P","gn":"Prices","dc":"PI","dn":"Producer Price Indices - Annual"},{"code":"15","label":"Wheat","gc":"P","gn":"Prices","dc":"PM","dn":"Producer Prices - Monthly"},{"code":"15","label":"Wheat","gc":"P","gn":"Prices","dc":"PP","dn":"Producer Prices - Annual"},{"code":"15","label":"Wheat","gc":"Q","gn":"Production","dc":"QC","dn":"Crops"},{"code":"15","label":"Wheat","gc":"Q","gn":"Production","dc":"QV","dn":"Value of Agricultural Production"},{"code":"15","label":"Wheat","gc":"T","gn":"Trade","dc":"TM","dn":"Detailed trade matrix"},{"code":"15","label":"Wheat","gc":"T","gn":"Trade","dc":"TP","dn":"Crops and livestock products"},{"code":"11945","label":"Wheat & Wheat Flour","gc":"X","gn":"Emergency Response","dc":"FA","dn":"Food Aid Shipments (WFP)"},{"code":"2511","label":"Wheat and products","gc":"FB","gn":"Food Balance","dc":"BC","dn":"Commodity Balances - Crops Primary Equivalent"},{"code":"2511","label":"Wheat and products","gc":"FB","gn":"Food Balance","dc":"CC","dn":"Food Supply - Crops Primary Equivalent"},{"code":"2511","label":"Wheat and products","gc":"FB","gn":"Food Balance","dc":"FBS","dn":"Food Balance Sheets"},{"code":"1945","label":"Wheat+Flour,Wheat Equivalent","gc":"T","gn":"Trade","dc":"TP","dn":"Crops and livestock products"}]
 
                     //index.add(codes);
 
@@ -621,17 +622,34 @@ if (!window.FAOSTATSearch) {
                 data : data,
 
                 success : function(response) {
+                    console.time('indexes');
 
                     // create
-                    FAOSTATSearch.lunrIndex = FAOSTATSearch.Lunr(function () {
-                        this.field('itemname', {boost: 10});
-                        this.field('elementname', {boost: 10});
+                    FAOSTATSearch.lunrIndexFull = FAOSTATSearch.Lunr(function () {
+                        this.field('itemname', {boost: 100});
+                        this.field('elementname', {boost: 25});
                         this.field('groupname');
-                        this.field('domainname');
+                        this.field('domainname', {boost: 10});
                         this.ref('id')
                     });
 
-                    FAOSTATSearch.lunrStore = {};
+                    FAOSTATSearch.lunrIndexItems = FAOSTATSearch.Lunr(function () {
+                        this.field('itemname', {boost: 100});
+                        this.field('groupname');
+                        this.field('domainname', {boost: 10});
+                        this.ref('id')
+                    });
+
+                    FAOSTATSearch.lunrIndexElements = FAOSTATSearch.Lunr(function () {
+                        this.field('elementname', {boost: 100});
+                        this.field('groupname');
+                        this.field('domainname', {boost: 10});
+                        this.ref('id')
+                    });
+
+                    FAOSTATSearch.lunrStoreFull = {};
+                    FAOSTATSearch.lunrStoreItem = {};
+                    FAOSTATSearch.lunrStoreElement = {};
                     for (var i = 0; i < response.length; i++) {
                         var value = {};
                         value.id = i;
@@ -639,20 +657,42 @@ if (!window.FAOSTATSearch) {
                         value.elementname = response[i][7];
                         value.domainname = response[i][3];
                         value.groupname = response[i][1];
-                        FAOSTATSearch.lunrIndex.add(value);
-                        FAOSTATSearch.lunrStore[value.id] = value;
+                        FAOSTATSearch.lunrIndexFull.add(value);
+                        //FAOSTATSearch.lunrIndexItems.add(value);
+                        //FAOSTATSearch.lunrIndexElements.add(value);
+
+                        FAOSTATSearch.lunrStoreFull[value.id] = value;
                     }
+                    console.timeEnd('indexes');
                 },
+
+
                 error : function(err, b, c) {}
             });
         },
 
         searchWordWithLunrFull: function(word) {
-            var ids = FAOSTATSearch.lunrIndex.search(word)
+            var ids = FAOSTATSearch.lunrIndexFull.search(word)
             var results = [];
             for (var i=0; i< ids.length; i++) {
-                results.push(FAOSTATSearch.lunrStore[ids[i].ref]);
+                results.push(FAOSTATSearch.lunrStoreFull[ids[i].ref]);
             }
+            console.log(results);
+
+            //var ids = FAOSTATSearch.lunrIndexItems.search(word)
+            //var results = [];
+            //for (var i=0; i< ids.length; i++) {
+            //    results.push(FAOSTATSearch.lunrStoreFull[ids[i].ref]);
+            //}
+            //console.log(results);
+            //
+            //var ids = FAOSTATSearch.lunrIndexElements.search(word)
+            //var results = [];
+            //for (var i=0; i< ids.length; i++) {
+            //    results.push(FAOSTATSearch.lunrStoreFull[ids[i].ref]);
+            //}
+            //console.log(results);
+
             return results;
         }
     };
